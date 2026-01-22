@@ -1,5 +1,5 @@
-//Gameboard object with an array that represents the columns and rows of the board
-const Game = (function () {
+//IIFE that creates a Game that handles all game logic (turns, checking for winner etc.)
+const Game = function (playerOne, playerTwo) {
     const board = [
         [0, 0, 0],
         [0, 0, 0],
@@ -9,39 +9,47 @@ const Game = (function () {
     //Is set by the checkBoard function if a winner is found
     let winner = null;
 
+    let playersTurn = playerOne;
+
+    const printBoard = () => {
+        console.table(board);
+    }
+
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
-    const haveTurn = (Player, Coords) => {
-        //Check that the location is free to be played, if so, then change cell to player's modifier
-        if(board[Coords.x][Coords.y] === 0) {
-            board[Coords.x][Coords.y] = Player.modifier;
-        } else {
-            //Add functionality to throw error or something
-            return 'That space is already filled, try somewhere else.'
-        }
-
-        //Always check board after a turn
-        checkBoard();
-
-        //If a winner is found, end the game
-        if(winner != null) {
-            endGame();
-        }
-
-        //If there is no winner and board is full (i.e. there are no 0s), it's a draw
-        let checkDraw;
-        board.forEach((row) => {
-            if(row.includes(0)) {
-                checkDraw = false;
+    function haveTurn(Player, Coords) {
+        //Check if its the player's turn
+        if(playersTurn === Player) {
+            //Check that the location is free to be played, if so, then change cell to player's modifier
+            if(board[Coords.x][Coords.y] === 0) {
+                board[Coords.x][Coords.y] = Player.modifier;
+            } else {
+                //Add functionality to throw error or something
+                return 'That space is already filled, try somewhere else.'
             }
-        });
 
-        if(checkDraw) {
-            endGame();
+            //Print board after a turn
+            printBoard();
+
+            //Always check board after a turn
+            checkBoard();
+
+            //Check to see if winner has changed
+            checkWinner();
+
+            //Change player's turn over
+            if(Player = playerOne) {
+                playersTurn = playerTwo;
+            } else {
+                playersTurn = playerOne;
+            }
+
+        } else {
+            return "It's not your turn yet!"
         }
     };
 
-    const checkBoard = () => {
+    function checkBoard() {
         //Takes a row, column or diagonal and checks if the game has been won by reducing the array and
         //setting the winner if needed
         function checkArray(array) {
@@ -77,6 +85,25 @@ const Game = (function () {
         ]);
     }
 
+    function checkWinner() {
+        //If a winner is found, end the game
+        if(winner != null) {
+            endGame();
+        }
+
+        //If there is no winner and board is full (i.e. there are no 0s), it's a draw
+        let checkDraw = true;
+        board.forEach((row) => {
+            if(row.includes(0)) {
+                checkDraw = false;
+            }
+        });
+
+        if(checkDraw) {
+            endGame();
+        }
+    }
+
     function endGame() {
         //Some functionality that ends the game
         if(winner) {
@@ -87,11 +114,10 @@ const Game = (function () {
     }
 
     return {
-        board,
+        printBoard,
         haveTurn,
-        checkBoard,
     }
-})();
+}
 
 //Factory function creates Player object that stores properties of each player
 function createPlayer(name, symbol) {
@@ -118,11 +144,3 @@ function createCoords(x, y) {
         y,
     }
 }
-
-const John = createPlayer('John', 'X');
-const Jack = createPlayer('Jack', 'O');
-
-Game.haveTurn(John, createCoords(0,0));
-Game.haveTurn(John, createCoords(0,1));
-Game.haveTurn(John, createCoords(0,2));
-
