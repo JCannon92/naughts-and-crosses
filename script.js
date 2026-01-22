@@ -10,13 +10,34 @@ const Game = (function () {
     let winner = null;
 
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
-    //coords should be an object, {x coord, y coord}
+    //Coords should be an object, {x coord, y coord}
     const haveTurn = (Player, Coords) => {
         //Check that the location is free to be played, if so, then change cell to player's modifier
         if(board[Coords.x][Coords.y] === 0) {
             board[Coords.x][Coords.y] = Player.modifier;
         } else {
             //Add functionality to throw error or something
+            return 'That space is already filled, try somewhere else.'
+        }
+
+        //Always check board after a turn
+        checkBoard();
+
+        //If a winner is found, end the game
+        if(winner != null) {
+            endGame();
+        }
+
+        //If there is no winner and board is full (i.e. there are no 0s), it's a draw
+        let checkDraw;
+        board.forEach((row) => {
+            if(row.includes(0)) {
+                checkDraw = false;
+            }
+        });
+
+        if(checkDraw) {
+            endGame();
         }
     };
 
@@ -54,13 +75,19 @@ const Game = (function () {
             board[1][1],
             board[2][0],
         ]);
+    }
 
-        return winner
+    function endGame() {
+        //Some functionality that ends the game
+        if(winner) {
+            console.log(winner + ' wins the game!');
+        } else {
+            console.log("It's a draw!");
+        }
     }
 
     return {
         board,
-        winner,
         haveTurn,
         checkBoard,
     }
@@ -91,3 +118,11 @@ function createCoords(x, y) {
         y,
     }
 }
+
+const John = createPlayer('John', 'X');
+const Jack = createPlayer('Jack', 'O');
+
+Game.haveTurn(John, createCoords(0,0));
+Game.haveTurn(John, createCoords(0,1));
+Game.haveTurn(John, createCoords(0,2));
+
