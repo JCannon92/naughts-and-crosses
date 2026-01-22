@@ -1,26 +1,68 @@
 //Gameboard object with an array that represents the columns and rows of the board
 
-const gameBoard = (function () {
-    const game = [
+const Game = (function () {
+    const board = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0]
     ];
 
+    //Is set by the checkBoard function if a winner is found
+    let winner = null;
+
     //Player should be an object with a property of 'symbol' where 1 = X and -1 = 0
-    //Location should be an object, {x coord, y coord}
-    const haveTurn = (player, location) => {
-        const cell = game[location.x][location.y]
+    //coords should be an object, {x coord, y coord}
+    const haveTurn = (player, coords) => {
         //Check that the location is free to be played, if so, then change cell to player's symbol
-        if(cell != 0) {
-            cell = player.symbol;
+        if(board[coords.x][coords.y] === 0) {
+            board[coords.x][coords.y] = player.symbol;
         } else {
             //Add functionality to throw error or something
         }
+    };
+
+    const checkBoard = () => {
+        //Takes a row, column or diagonal and checks if the game has been won by reducing the array and
+        //setting the winner if needed
+        function checkArray(array) {
+            arraySum = array.reduce((sum, current) => sum + current);
+            if(arraySum === 3) {
+                winner = 'X';
+            } else if(arraySum === -3) {
+                winner = 'O';
+            }
+        }
+        //Rows are already an array so just check them
+        board.forEach(checkArray);
+        
+        //Columns can be checked by looping through each row and only checking the relevant column value
+        for(let i = 0; i < 2; i++) {
+            checkArray([
+                board[0][i], 
+                board[1][i], 
+                board[2][i],
+            ]);
+        }
+
+        //Diagonals must be checked separately as there are two variations, top left to bottom right and the mirror
+        checkArray([
+            board[0][0],
+            board[1][1],
+            board[2][2],
+        ]);
+        checkArray([
+            board[0][2],
+            board[1][1],
+            board[2][0],
+        ]);
+
+        return winner
     }
 
     return {
-        game,
-        haveTurn
+        board,
+        winner,
+        haveTurn,
+        checkBoard,
     }
 })();
