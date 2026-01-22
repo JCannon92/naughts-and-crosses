@@ -1,23 +1,57 @@
-//Factory function that creates a Game that handles all game logic (turns, checking for winner etc.)
-const Game = function (playerOne, playerTwo) {
+//IIFE to generate the JS gameboard
+const gameBoard = (function() {
     const board = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0]
     ];
 
-    //Is set by the checkBoard function if a winner is found
-    let winner = null;
-
-    let playersTurn = playerOne;
-
     const printBoard = () => {
         console.table(board);
     }
 
-    const getBoard = () => {
-        return board
+    return {
+        board,
+        printBoard,
     }
+})();
+
+//IIFE that will create a renderer to convert the JS board to the DOM board
+const Renderer = (function() {
+    //Convert the array numbers to their symbols
+    function convertToSymbol(num) {
+        if(num === 1) {
+            return 'X'
+        } else if(num === -1) {
+            return 'O'
+        } else {
+            return ''
+        }
+    }
+
+    function renderDisplay() {
+        //Get the display-board divs and convert the collection to an array
+        const display = document.querySelectorAll('.board-cell');
+
+        //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
+        for(let i = 0; i <=8; i++) {
+            display[i].children[0].textContent = convertToSymbol(gameBoard.board[Math.floor(i / 3)][i % 3]);
+        }
+    }
+
+    return {
+        renderDisplay
+    }
+})();
+
+
+//Factory function that creates a Game that handles all game logic (turns, checking for winner etc.)
+const Game = function (playerOne, playerTwo) {
+
+    //Is set by the checkBoard function if a winner is found
+    let winner = null;
+
+    let playersTurn = playerOne;
 
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
@@ -25,8 +59,8 @@ const Game = function (playerOne, playerTwo) {
         //Check if its the player's turn
         if(playersTurn === Player) {
             //Check that the location is free to be played, if so, then change cell to player's modifier
-            if(board[Coords.x][Coords.y] === 0) {
-                board[Coords.x][Coords.y] = Player.modifier;
+            if(gameBoard.board[Coords.x][Coords.y] === 0) {
+                gameBoard.board[Coords.x][Coords.y] = Player.modifier;
             } else {
                 //Add functionality to throw error or something
                 return 'That space is already filled, try somewhere else.'
@@ -42,9 +76,9 @@ const Game = function (playerOne, playerTwo) {
             checkWinner();
 
             //Change player's turn over
-            if(Player = playerOne) {
+            if(Player === playerOne) {
                 playersTurn = playerTwo;
-            } else {
+            } else if(Player === playerTwo) {
                 playersTurn = playerOne;
             }
 
@@ -65,27 +99,27 @@ const Game = function (playerOne, playerTwo) {
             }
         }
         //Rows are already an array so just check them
-        board.forEach(checkArray);
+        gameBoard.board.forEach(checkArray);
         
         //Columns can be checked by looping through each row and only checking the relevant column value
         for(let i = 0; i < 2; i++) {
             checkArray([
-                board[0][i], 
-                board[1][i], 
-                board[2][i],
+                gameBoard.board[0][i], 
+                gameBoard.board[1][i], 
+                gameBoard.board[2][i],
             ]);
         }
 
         //Diagonals must be checked separately as there are two variations, top left to bottom right and the mirror
         checkArray([
-            board[0][0],
-            board[1][1],
-            board[2][2],
+            gameBoard.board[0][0],
+            gameBoard.board[1][1],
+            gameBoard.board[2][2],
         ]);
         checkArray([
-            board[0][2],
-            board[1][1],
-            board[2][0],
+            gameBoard.board[0][2],
+            gameBoard.board[1][1],
+            gameBoard.board[2][0],
         ]);
     }
 
@@ -97,7 +131,7 @@ const Game = function (playerOne, playerTwo) {
 
         //If there is no winner and board is full (i.e. there are no 0s), it's a draw
         let checkDraw = true;
-        board.forEach((row) => {
+        gameBoard.board.forEach((row) => {
             if(row.includes(0)) {
                 checkDraw = false;
             }
@@ -118,9 +152,7 @@ const Game = function (playerOne, playerTwo) {
     }
 
     return {
-        printBoard,
-        getBoard,
-        haveTurn,
+        haveTurn
     }
 }
 
@@ -150,33 +182,6 @@ function createCoords(x, y) {
     }
 }
 
-//Renderer factory that will create an object to convert the JS board to the DOM board
-const Renderer = function(Game) {
-    //Get the game board
-    const board = Game.getBoard();
-
-    //Convert the array numbers to their symbols
-    function convertToSymbol(num) {
-        if(num === 1) {
-            return 'X'
-        } else if(num === -1) {
-            return 'O'
-        } else {
-            return ''
-        }
-    }
-
-    function renderDisplay() {
-        //Get the display-board divs and convert the collection to an array
-        const display = document.querySelectorAll('.board-cell');
-
-        //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
-        for(let i = 0; i <=8; i++) {
-            display[i].children[0].textContent = convertToSymbol(board[Math.floor(i / 3)][i % 3]);
-        }
-    }
-
-    return {
-        renderDisplay,
-    }
-};
+John = createPlayer('John', 'X');
+Jack = createPlayer('Jack', 'O');
+myGame = Game(John, Jack);
