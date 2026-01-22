@@ -1,5 +1,4 @@
 //Gameboard object with an array that represents the columns and rows of the board
-
 const Game = (function () {
     const board = [
         [0, 0, 0],
@@ -10,12 +9,12 @@ const Game = (function () {
     //Is set by the checkBoard function if a winner is found
     let winner = null;
 
-    //Player should be an object with a property of 'symbol' where 1 = X and -1 = 0
+    //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //coords should be an object, {x coord, y coord}
-    const haveTurn = (player, coords) => {
-        //Check that the location is free to be played, if so, then change cell to player's symbol
-        if(board[coords.x][coords.y] === 0) {
-            board[coords.x][coords.y] = player.symbol;
+    const haveTurn = (Player, Coords) => {
+        //Check that the location is free to be played, if so, then change cell to player's modifier
+        if(board[Coords.x][Coords.y] === 0) {
+            board[Coords.x][Coords.y] = Player.modifier;
         } else {
             //Add functionality to throw error or something
         }
@@ -66,3 +65,29 @@ const Game = (function () {
         checkBoard,
     }
 })();
+
+//Factory function creates Player object that stores properties of each player
+function createPlayer(name, symbol) {
+    let modifier;
+    if(symbol === 'X') {
+        modifier = 1;
+    } else if(symbol === 'O') {
+        modifier = -1;
+    } else {
+        return 'Not a valid symbol, please provide "X" or "O".'
+    }
+
+    return {
+        name,
+        symbol,
+        modifier,
+    }
+}
+
+//Factory Function that creates basic Coords object
+function createCoords(x, y) {
+    return {
+        x,
+        y,
+    }
+}
