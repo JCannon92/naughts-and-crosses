@@ -1,4 +1,4 @@
-//IIFE that creates a Game that handles all game logic (turns, checking for winner etc.)
+//Factory function that creates a Game that handles all game logic (turns, checking for winner etc.)
 const Game = function (playerOne, playerTwo) {
     const board = [
         [0, 0, 0],
@@ -15,6 +15,10 @@ const Game = function (playerOne, playerTwo) {
         console.table(board);
     }
 
+    const getBoard = () => {
+        return board
+    }
+
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
     function haveTurn(Player, Coords) {
@@ -28,8 +32,8 @@ const Game = function (playerOne, playerTwo) {
                 return 'That space is already filled, try somewhere else.'
             }
 
-            //Print board after a turn
-            printBoard();
+            //Render board after a turn
+            Renderer.renderDisplay();
 
             //Always check board after a turn
             checkBoard();
@@ -115,6 +119,7 @@ const Game = function (playerOne, playerTwo) {
 
     return {
         printBoard,
+        getBoard,
         haveTurn,
     }
 }
@@ -144,3 +149,34 @@ function createCoords(x, y) {
         y,
     }
 }
+
+//Renderer factory that will create an object to convert the JS board to the DOM board
+const Renderer = function(Game) {
+    //Get the game board
+    const board = Game.getBoard();
+
+    //Convert the array numbers to their symbols
+    function convertToSymbol(num) {
+        if(num === 1) {
+            return 'X'
+        } else if(num === -1) {
+            return 'O'
+        } else {
+            return ''
+        }
+    }
+
+    function renderDisplay() {
+        //Get the display-board divs and convert the collection to an array
+        const display = document.querySelectorAll('.board-cell');
+
+        //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
+        for(let i = 0; i <=8; i++) {
+            display[i].children[0].textContent = convertToSymbol(board[Math.floor(i / 3)][i % 3]);
+        }
+    }
+
+    return {
+        renderDisplay,
+    }
+};
