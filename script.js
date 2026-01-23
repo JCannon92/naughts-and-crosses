@@ -193,7 +193,7 @@ const optionsSelector = (function () {
     function startMultiplayer() {
         //Replace the buttons with a form for entering player names
         const buttonContainer = document.querySelector('.splash-screen .button-container');
-        buttonContainer.remove();        
+        buttonContainer.style.display = 'none';        
 
         const optionsForm = document.createElement('form');
 
@@ -219,11 +219,20 @@ const optionsSelector = (function () {
                 startGame(playerOneInput.value, playerTwoInput.value);
             });
 
+        const goBackButton = document.createElement('button');
+            goBackButton.id = 'go-back';
+            goBackButton.textContent = 'Go Back';
+            goBackButton.addEventListener('click', () => {
+                optionsForm.remove();
+                buttonContainer.style.display = 'flex';
+            });
+
         optionsForm.appendChild(playerOneLabel);
         optionsForm.appendChild(playerOneInput);
         optionsForm.appendChild(playerTwoLabel);
         optionsForm.appendChild(playerTwoInput);
         optionsForm.appendChild(startGameButton);
+        optionsForm.appendChild(goBackButton);
 
         splashScreen.appendChild(optionsForm);
 
