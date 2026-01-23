@@ -55,36 +55,32 @@ const Game = function (playerOne, playerTwo) {
 
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
-    function haveTurn(Player, Coords) {
+    function haveTurn(Coords) {
         //Check if its the player's turn
-        if(playersTurn === Player) {
-            //Check that the location is free to be played, if so, then change cell to player's modifier
-            if(gameBoard.board[Coords.x][Coords.y] === 0) {
-                gameBoard.board[Coords.x][Coords.y] = Player.modifier;
-            } else {
-                //Add functionality to throw error or something
-                return 'That space is already filled, try somewhere else.'
-            }
-
-            //Render board after a turn
-            Renderer.renderDisplay();
-
-            //Always check board after a turn
-            checkBoard();
-
-            //Check to see if winner has changed
-            checkWinner();
-
-            //Change player's turn over
-            if(Player === playerOne) {
-                playersTurn = playerTwo;
-            } else if(Player === playerTwo) {
-                playersTurn = playerOne;
-            }
-
+        //Check that the location is free to be played, if so, then change cell to player's modifier
+        if(gameBoard.board[Coords.x][Coords.y] === 0) {
+            gameBoard.board[Coords.x][Coords.y] = playersTurn.modifier;
         } else {
-            return "It's not your turn yet!"
+            //Add functionality to throw error or something
+            return 'That space is already filled, try somewhere else.'
         }
+
+        //Render board after a turn
+        Renderer.renderDisplay();
+
+        //Always check board after a turn
+        checkBoard();
+
+        //Check to see if winner has changed
+        checkWinner();
+
+        //Change player's turn over
+        if(playersTurn === playerOne) {
+            playersTurn = playerTwo;
+        } else if(playersTurn === playerTwo) {
+            playersTurn = playerOne;
+        }
+
     };
 
     function checkBoard() {
