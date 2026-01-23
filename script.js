@@ -178,6 +178,9 @@ function createCoords(x, y) {
     }
 }
 
+
+//Splash Screen
+
 John = createPlayer('John', 'X');
 Jack = createPlayer('Jack', 'O');
 myGame = Game(John, Jack);

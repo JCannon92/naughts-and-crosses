@@ -1,9 +1,52 @@
+:root {
+    box-sizing: border-box;
+    --ash: #B4B8AB;
+    --deep-blue: #153243;
+    --yale-blue: #284B63;
+    --linen: #EEF0EB;
+}
+
 body {
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Roboto';
+    margin: 0;
+    background-color: var(--ash);
+}
+
+body h1 {
+    z-index: 2;
+    color: var(--deep-blue);
+}
+
+.splash-screen {
+    height: 80%;
+    width: 60%;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    margin: 0;
+    position: absolute;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-screen button {
+    width: 200px;
+    height: 50px;
+    margin: 40px 0;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--deep-blue);
+    color: var(--linen);
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .board-container {
