@@ -265,10 +265,7 @@ const optionsSelector = (function () {
         return newGame;
     }
 
-    //Add events to their buttons
+    //Add events to the single and multiplayer buttons
+    singlePlayerButton.addEventListener('click', () => startGame('Human', 'Computer'));
     multiPlayerButton.addEventListener('click', startMultiplayer);
-
-    return {
-        startGame
-    }
 })();
