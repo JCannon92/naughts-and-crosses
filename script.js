@@ -29,7 +29,7 @@ const Renderer = (function() {
         }
     }
 
-    function renderDisplay() {
+    function renderBoard() {
         //Get the display-board divs and convert the collection to an array
         const display = document.querySelectorAll('.board-cell');
 
@@ -39,8 +39,17 @@ const Renderer = (function() {
         }
     }
 
+    function renderTurnIndicator(player) {
+        //Replace the turn indicator with the player to go next
+        const turnIndicator = document.querySelector('h2#turn-indicator');
+        //Replace human with 'Your' in single player matches
+        if(player === 'Human') {turnIndicator.textContent = 'Your turn!'}
+        if(!(player === 'Computer')) {turnIndicator.textContent = player + "'s turn!";}
+    }
+
     return {
-        renderDisplay
+        renderBoard,
+        renderTurnIndicator,
     }
 })();
 
@@ -66,7 +75,8 @@ const Game = function (playerOne, playerTwo) {
         }
 
         //Render board after a turn
-        Renderer.renderDisplay();
+        Renderer.renderBoard();
+
 
         //Always check board after a turn
         checkBoard();
@@ -80,6 +90,9 @@ const Game = function (playerOne, playerTwo) {
         } else if(playersTurn === playerTwo) {
             playersTurn = playerOne;
         }
+
+        //Render turn indicator
+        Renderer.renderTurnIndicator(playersTurn);
 
     };
 
@@ -178,6 +191,21 @@ function createCoords(x, y) {
     }
 }
 
+//Game controller is used to control the flow of the game when the user interacts with the DOM
+function startGame(playerOneName, playerTwoName) {
+    //Remove splash screen and start the game!
+    const playerOne = createPlayer(playerOneName, 'X');
+    const playerTwo = createPlayer(playerTwoName, 'O');
+    const myGame = Game(playerOne, playerTwo);
+    Renderer.renderTurnIndicator(playerOneName);
+
+     return {
+        playerOne,
+        playerTwo,
+        myGame
+    }
+}
+
 
 //Splash Screen
 //There are two play options, single player or multiplayer.
@@ -227,9 +255,11 @@ const optionsSelector = (function () {
                         input.classList.remove('invalid');
                     }
                 }
-
+                //If the inputs are valid, start the game
                 if(!invalidFlag) {
-                startGame(playerOneInput.value, playerTwoInput.value);
+                    splashScreen.remove();
+                    //Return a gameController object that is used to control the flow of the game
+                    gameController = startGame(playerOneInput.value, playerTwoInput.value);
                 }
             });
 
@@ -254,18 +284,10 @@ const optionsSelector = (function () {
 
     }
 
-    function startGame(playerOneName, playerTwoName) {
-        //Remove splash screen and start the game!
-        playerOne = createPlayer(playerOneName, 'X');
-        playerTwo = createPlayer(playerTwoName, 'O');
-        newGame = Game(playerOne, playerTwo);
-        splashScreen.remove();
-
-
-        return newGame;
-    }
-
     //Add events to the single and multiplayer buttons
-    singlePlayerButton.addEventListener('click', () => startGame('Human', 'Computer'));
+    singlePlayerButton.addEventListener('click', () => {
+        splashScreen.remove();
+        gameController = startGame('Human', 'Computer');
+    });
     multiPlayerButton.addEventListener('click', startMultiplayer);
 })();

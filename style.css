@@ -22,10 +22,16 @@ body h1 {
     color: var(--deep-blue);
 }
 
+body h2 {
+    margin: 5px;
+    height: 30px;
+    color: var(--deep-blue);
+}
+
 /* Splash Screen Styling */
 
 .splash-screen {
-    height: 80%;
+    height: 90%;
     width: 60%;
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(4px);
