@@ -216,7 +216,21 @@ const optionsSelector = (function () {
             startGameButton.textContent = 'Start Game!';
             startGameButton.addEventListener('click', (event) => {
                 event.preventDefault();
+                //Validation to check that the inputs are not empty
+                const inputs = document.querySelectorAll('input');
+                let invalidFlag = false;
+                for (let input of inputs) {
+                    if(input.value === '') {
+                        input.classList.add('invalid');
+                        invalidFlag = true;
+                    } else {
+                        input.classList.remove('invalid');
+                    }
+                }
+
+                if(!invalidFlag) {
                 startGame(playerOneInput.value, playerTwoInput.value);
+                }
             });
 
         const goBackButton = document.createElement('button');

@@ -84,10 +84,15 @@ body h1 {
     border-radius: 20px;
     font-size: 18px;
     color: var(--deep-blue);
+    text-align: center;
 }
 
-.splash-screen input:focus,
-.splash-screen input:focus-visible {
+.splash-screen input.invalid{
+    outline: 3px solid darkred;
+}
+
+.splash-screen input:not(.invalid):focus,
+.splash-screen input:not(.invalid):focus-visible {
     outline: 3px solid var(--deep-blue);
 }
 
