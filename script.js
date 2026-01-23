@@ -180,7 +180,72 @@ function createCoords(x, y) {
 
 
 //Splash Screen
+//There are two play options, single player or multiplayer.
 
-John = createPlayer('John', 'X');
-Jack = createPlayer('Jack', 'O');
-myGame = Game(John, Jack);
+const optionsSelector = (function () {
+    const splashScreen = document.querySelector('.splash-screen');
+    const singlePlayerButton = document.querySelector('button#single-player');
+    const multiPlayerButton = document.querySelector('button#multi-player');
+
+    //Single player mode will set the second player as a computer that will make random legal actions
+
+    //Multiplayer mode will allow two human players, alternating control between the players
+    function startMultiplayer() {
+        //Replace the buttons with a form for entering player names
+        const buttonContainer = document.querySelector('.splash-screen .button-container');
+        buttonContainer.remove();        
+
+        const optionsForm = document.createElement('form');
+
+        const playerOneLabel = document.createElement('label');
+            playerOneLabel.setAttribute('for', 'player-one-name');
+            playerOneLabel.textContent = 'Player One Name:';
+        const playerOneInput = document.createElement('input');
+            playerOneInput.setAttribute('name', 'player-one-name');
+            playerOneInput.id = 'player-one-name';
+
+        const playerTwoLabel = document.createElement('label');
+            playerTwoLabel.setAttribute('for', 'player-two-name');
+            playerTwoLabel.textContent = 'Player Two Name:';
+        const playerTwoInput = document.createElement('input');
+            playerTwoInput.setAttribute('name', 'player-two-name');
+            playerTwoInput.id = 'player-two-name';
+
+        const startGameButton = document.createElement('button');
+            startGameButton.id = 'start-game';
+            startGameButton.textContent = 'Start Game!';
+            startGameButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                startGame(playerOneInput.value, playerTwoInput.value);
+            });
+
+        optionsForm.appendChild(playerOneLabel);
+        optionsForm.appendChild(playerOneInput);
+        optionsForm.appendChild(playerTwoLabel);
+        optionsForm.appendChild(playerTwoInput);
+        optionsForm.appendChild(startGameButton);
+
+        splashScreen.appendChild(optionsForm);
+
+        playerOneInput.focus();
+
+    }
+
+    function startGame(playerOneName, playerTwoName) {
+        //Remove splash screen and start the game!
+        playerOne = createPlayer(playerOneName, 'X');
+        playerTwo = createPlayer(playerTwoName, 'O');
+        newGame = Game(playerOne, playerTwo);
+        splashScreen.remove();
+
+
+        return newGame;
+    }
+
+    //Add events to their buttons
+    multiPlayerButton.addEventListener('click', startMultiplayer);
+
+    return {
+        startGame
+    }
+})();

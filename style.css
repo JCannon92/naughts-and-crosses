@@ -14,13 +14,15 @@ body {
     align-items: center;
     font-family: 'Roboto';
     margin: 0;
-    background-color: var(--ash);
+    background-color: var(--linen);
 }
 
 body h1 {
     z-index: 2;
     color: var(--deep-blue);
 }
+
+/* Splash Screen Styling */
 
 .splash-screen {
     height: 80%;
@@ -30,11 +32,16 @@ body h1 {
     margin: 0;
     position: absolute;
     z-index: 1;
+}
 
+.splash-screen .button-container {
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
 }
 
 .splash-screen button {
@@ -47,7 +54,46 @@ body h1 {
     color: var(--linen);
     font-size: 20px;
     font-weight: bold;
+    cursor: pointer;
 }
+
+.splash-screen form {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-screen label {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--deep-blue);
+    background-color: rgba(255, 255, 255, 0.6);
+    border: none;
+    border-radius: 20px;
+    padding: 5px 20px;
+}
+
+.splash-screen input {
+    margin: 20px 0 60px 0;
+    padding: 10px 20px;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    color: var(--deep-blue);
+}
+
+.splash-screen input:focus,
+.splash-screen input:focus-visible {
+    outline: 3px solid var(--deep-blue);
+}
+
+
+
+/* Board styling */
 
 .board-container {
     display: grid;
