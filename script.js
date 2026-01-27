@@ -24,11 +24,17 @@ const Board = (function() {
         return board[x][y]
     }
 
+    function changeCellFromIndex(index, value) {
+        //Change a cell value from an index
+        board[Math.floor(index / 3)][index % 3] = value;
+    }
+
     return {
         getBoard,
         printBoard,
         getCellFromIndex,
         getCellfromXY,
+        changeCellFromIndex,
     }
 })();
 
@@ -89,10 +95,11 @@ const createGame = function (playerOne, playerTwo) {
 
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
-    function haveTurn(cell) {
+    function haveTurn(cellIndex) {
         //Check that the location is free to be played, if so, then change cell to player's modifier
-        if(cell === 0) {
-            cell = playersTurn.modifier;
+        cellValue = Board.getCellFromIndex(cellIndex);
+        if(cellValue === 0) {
+            Board.changeCellFromIndex(cellIndex, playersTurn.modifier);
         } else {
             //Add functionality to throw error or something
             Renderer.renderErrorMessage('That space is already taken, try somewhere else!')
@@ -336,7 +343,7 @@ const boardInitialiser = (function() {
             element.removeEventListener('mouseenter', drawSymbol);
             element.removeEventListener('mouseleave', removeSymbol);
             //Have a turn
-            gameController.myGame.haveTurn(Board.getCellFromIndex(i));
+            gameController.myGame.haveTurn(i);
         });
 
     });
