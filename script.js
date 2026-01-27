@@ -62,16 +62,18 @@ const Renderer = (function() {
         //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
         for(let i = 0; i <=8; i++) {
             display[i].textContent = convertToSymbol(Board.getCellFromIndex(i));
+            //Remove mouse hover drawing effects - effectively fixes the symbol - for cells where the value is not 0
+            if(Board.getCellFromIndex(i) !== 0) {
+                display[i].removeEventListener('mouseenter', boardInitialiser.drawSymbol);
+                display[i].removeEventListener('mouseleave', boardInitialiser.removeSymbol);
+            }
         }
     }
 
     function renderTurnIndicator(player) {
         //Replace the turn indicator with the player to go next
         //Replace human with 'Your' in single player matches
-        console.log(player.name);
-        if(player.name === 'Human') {
-            messageDisplay.textContent = 'Your turn!';
-        } else if(!(player.name === 'Computer')) {
+         if(!(player.name === 'Human' || player.name === 'Computer')) {
             messageDisplay.textContent = player.name + "'s turn!";
         }
     }
@@ -128,11 +130,30 @@ const createGame = function (playerOne, playerTwo) {
             //Check to see if winner has changed
             checkWinner();
 
+            //If it's the computer's turn, take a computer turn
+            if(playersTurn.name === 'Computer') {
+                haveComputerTurn();
+            }
+
         } else {
             //Add functionality to throw error or something
             Renderer.renderMessage('That space is already taken, try somewhere else!')
         }
     };
+
+    async function haveComputerTurn() {
+        while (true) {
+            //Select a random cell
+            let randomCell = Math.floor(Math.random() * 8);
+            let cellValue = Board.getCellFromIndex(randomCell);
+            //If it isn't 0, select another until it isn't 0
+            if(cellValue === 0) {
+                //Otherwise haveTurn on this cell
+                haveTurn(randomCell);
+                break
+            }
+        }
+    }
 
     function checkBoard() {
         //Takes a row, column or diagonal and checks if the game has been won by reducing the array and
@@ -349,9 +370,6 @@ const boardInitialiser = (function() {
     }
 
     const selectCell = function(element, index) {
-        //Remove mouse hover drawing effects - effectively fixes the symbol
-        element.removeEventListener('mouseenter', drawSymbol);
-        element.removeEventListener('mouseleave', removeSymbol);
         //Have a turn
         gameController.myGame.haveTurn(index);
     }
@@ -369,6 +387,10 @@ const boardInitialiser = (function() {
         element.addEventListener('click', () => selectCell(element, index));
     });
 
-    return {selectCell}
+    return {
+        selectCell,
+        drawSymbol,
+        removeSymbol,
+    }
 
 })();
