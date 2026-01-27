@@ -52,7 +52,7 @@ const Renderer = (function() {
 
         //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
         for(let i = 0; i <=8; i++) {
-            display[i].children[0].textContent = convertToSymbol(Board.getCellFromIndex(i));
+            display[i].textContent = convertToSymbol(Board.getCellFromIndex(i));
         }
     }
 
@@ -60,7 +60,7 @@ const Renderer = (function() {
         //Replace the turn indicator with the player to go next
         //Replace human with 'Your' in single player matches
         if(player === 'Human') {messageDisplay.textContent = 'Your turn!'}
-        if(!(player === 'Computer')) {messageDisplay.textContent = player + "'s turn!";}
+        if(!(player === 'Computer')) {messageDisplay.textContent = player.name + "'s turn!";}
     }
 
     function renderErrorMessage(message) {
@@ -76,7 +76,7 @@ const Renderer = (function() {
 
 
 //Factory function that creates a Game that handles all game logic (turns, checking for winner etc.)
-const Game = function (playerOne, playerTwo) {
+const createGame = function (playerOne, playerTwo) {
 
     //Is set by the checkBoard function if a winner is found
     let winner = null;
@@ -214,8 +214,8 @@ function createGameController(playerOneName, playerTwoName) {
     //Remove splash screen and start the game!
     const playerOne = createPlayer(playerOneName, 'X');
     const playerTwo = createPlayer(playerTwoName, 'O');
-    const myGame = Game(playerOne, playerTwo);
-    Renderer.renderTurnIndicator(playerOneName);
+    const myGame = createGame(playerOne, playerTwo);
+    Renderer.renderTurnIndicator(playerOne);
 
      return {
         playerOne,
@@ -322,7 +322,7 @@ const boardInitialiser = (function() {
     }
 
     const boardCells = document.querySelectorAll('.board-cell');
-    boardCells.forEach((element) => {
+    boardCells.forEach((element, i) => {
         //Add a mouse enter and mouse leave event listener to indicate to show the user where they are going to place
         //Only works on blank cells
         //Show the symbol as the mouse enters
@@ -336,6 +336,7 @@ const boardInitialiser = (function() {
             element.removeEventListener('mouseenter', drawSymbol);
             element.removeEventListener('mouseleave', removeSymbol);
             //Have a turn
+            gameController.myGame.haveTurn(Board.getCellFromIndex(i));
         });
 
     });
