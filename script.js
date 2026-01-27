@@ -97,34 +97,33 @@ const createGame = function (playerOne, playerTwo) {
     //Coords should be an object, {x coord, y coord}
     function haveTurn(cellIndex) {
         //Check that the location is free to be played, if so, then change cell to player's modifier
-        cellValue = Board.getCellFromIndex(cellIndex);
-        if(cellValue === 0) {
+        if(Board.getCellFromIndex(cellIndex) === 0) {
             Board.changeCellFromIndex(cellIndex, playersTurn.modifier);
+
+            //Render board after a turn
+            Renderer.renderBoard();
+
+
+            //Always check board after a turn
+            checkBoard();
+
+            //Check to see if winner has changed
+            checkWinner();
+
+            //Change player's turn over
+            if(playersTurn === playerOne) {
+                playersTurn = playerTwo;
+            } else if(playersTurn === playerTwo) {
+                playersTurn = playerOne;
+            }
+
+            //Render turn indicator
+            Renderer.renderTurnIndicator(playersTurn);
+
         } else {
             //Add functionality to throw error or something
             Renderer.renderMessage('That space is already taken, try somewhere else!')
         }
-
-        //Render board after a turn
-        Renderer.renderBoard();
-
-
-        //Always check board after a turn
-        checkBoard();
-
-        //Check to see if winner has changed
-        checkWinner();
-
-        //Change player's turn over
-        if(playersTurn === playerOne) {
-            playersTurn = playerTwo;
-        } else if(playersTurn === playerTwo) {
-            playersTurn = playerOne;
-        }
-
-        //Render turn indicator
-        Renderer.renderTurnIndicator(playersTurn);
-
     };
 
     function checkBoard() {
@@ -133,9 +132,9 @@ const createGame = function (playerOne, playerTwo) {
         function checkArray(array) {
             arraySum = array.reduce((sum, current) => sum + current);
             if(arraySum === 3) {
-                winner = 'X';
+                winner = playerOne;
             } else if(arraySum === -3) {
-                winner = 'O';
+                winner = playerTwo;
             }
         }
         //Rows are already an array so just check them
@@ -183,17 +182,21 @@ const createGame = function (playerOne, playerTwo) {
     }
 
     function endGame() {
-        //Some functionality that ends the game
+        //Inform user of the result
         if(winner) {
-            console.log(winner + ' wins the game!');
+            Renderer.renderMessage(winner.name + ' wins the game!');
         } else {
-            console.log("It's a draw!");
+            Renderer.renderMessage("It's a draw!");
         }
+        //Remove event listeners to prevent further interaction
+
+
     }
 
     return {
         haveTurn,
         getTurn,
+        winner,
     }
 }
 
@@ -328,8 +331,16 @@ const boardInitialiser = (function() {
         event.target.textContent = '';
     }
 
+    const selectCell = function(element, index) {
+        //Remove mouse hover drawing effects - effectively fixes the symbol
+        element.removeEventListener('mouseenter', drawSymbol);
+        element.removeEventListener('mouseleave', removeSymbol);
+        //Have a turn
+        gameController.myGame.haveTurn(index);
+    }
+
     const boardCells = document.querySelectorAll('.board-cell');
-    boardCells.forEach((element, i) => {
+    boardCells.forEach((element, index) => {
         //Add a mouse enter and mouse leave event listener to indicate to show the user where they are going to place
         //Only works on blank cells
         //Show the symbol as the mouse enters
@@ -338,14 +349,7 @@ const boardInitialiser = (function() {
         element.addEventListener('mouseleave', removeSymbol);
     
         //Add a click event listener that changes the board cell's value
-        element.addEventListener('click', (event) => {
-            //Remove mouse hover drawing effects - effectively fixes the symbol
-            element.removeEventListener('mouseenter', drawSymbol);
-            element.removeEventListener('mouseleave', removeSymbol);
-            //Have a turn
-            gameController.myGame.haveTurn(i);
-        });
-
+        element.addEventListener('click', () => selectCell(element, index));
     });
 
 })();
