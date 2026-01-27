@@ -62,6 +62,10 @@ const Game = function (playerOne, playerTwo) {
 
     let playersTurn = playerOne;
 
+    function getTurn() {
+        return playersTurn;
+    }
+
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
     function haveTurn(Coords) {
@@ -161,7 +165,8 @@ const Game = function (playerOne, playerTwo) {
     }
 
     return {
-        haveTurn
+        haveTurn,
+        getTurn,
     }
 }
 
@@ -290,4 +295,24 @@ const optionsSelector = (function () {
         gameController = startGame('Human', 'Computer');
     });
     multiPlayerButton.addEventListener('click', startMultiplayer);
+})();
+
+//Event listeners for interacting with the board
+const boardInitialiser = (function() {
+    const boardCells = document.querySelectorAll('.board-cell');
+
+    //For all board cells, add a mouse enter and mouse leave event listener to indicate to show the user where they are going to place
+    boardCells.forEach((element) => {
+        //Only works on blank cells
+        if(element.textContent === '') {
+            //Show the symbol as the mouse enters
+            element.addEventListener('mouseenter', (event) => {
+            event.target.textContent = gameController.myGame.getTurn().symbol;
+            });
+            //Remove the symbol as it leaves
+            element.addEventListener('mouseleave', (event) => {
+                event.target.textContent = '';
+            });
+        }
+    });
 })();
