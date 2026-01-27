@@ -68,8 +68,12 @@ const Renderer = (function() {
     function renderTurnIndicator(player) {
         //Replace the turn indicator with the player to go next
         //Replace human with 'Your' in single player matches
-        if(player === 'Human') {messageDisplay.textContent = 'Your turn!'}
-        if(!(player === 'Computer')) {messageDisplay.textContent = player.name + "'s turn!";}
+        console.log(player.name);
+        if(player.name === 'Human') {
+            messageDisplay.textContent = 'Your turn!';
+        } else if(!(player.name === 'Computer')) {
+            messageDisplay.textContent = player.name + "'s turn!";
+        }
     }
 
     function renderMessage(message) {
@@ -188,7 +192,13 @@ const createGame = function (playerOne, playerTwo) {
     function endGame() {
         //Inform user of the result
         if(winner) {
+            if (winner.name === 'Human') {
+                Renderer.renderMessage('You win!');
+            } else if (winner.name === 'Computer') {
+                Renderer.renderMessage('You lost... better luck next time!')
+            } else {
             Renderer.renderMessage(winner.name + ' wins the game!');
+            }
         } else {
             Renderer.renderMessage("It's a draw!");
         }
