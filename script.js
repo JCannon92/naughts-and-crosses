@@ -107,9 +107,6 @@ const createGame = function (playerOne, playerTwo) {
             //Always check board after a turn
             checkBoard();
 
-            //Check to see if winner has changed
-            checkWinner();
-
             //Change player's turn over
             if(playersTurn === playerOne) {
                 playersTurn = playerTwo;
@@ -119,6 +116,9 @@ const createGame = function (playerOne, playerTwo) {
 
             //Render turn indicator
             Renderer.renderTurnIndicator(playersTurn);
+
+            //Check to see if winner has changed
+            checkWinner();
 
         } else {
             //Add functionality to throw error or something
@@ -196,7 +196,6 @@ const createGame = function (playerOne, playerTwo) {
     return {
         haveTurn,
         getTurn,
-        winner,
     }
 }
 
