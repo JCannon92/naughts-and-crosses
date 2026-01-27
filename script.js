@@ -1,18 +1,34 @@
-//IIFE to generate the JS gameboard
-const gameBoard = (function() {
+//IIFE to generate the JS Board
+const Board = (function() {
     const board = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0]
     ];
 
+    const getBoard = () => {
+        return board
+    }
+
     const printBoard = () => {
         console.table(board);
     }
 
+    function getCellFromIndex(index) {
+        //Get a board cell from an index
+        return board[Math.floor(index / 3)][index % 3]
+    }
+
+    function getCellfromXY(x, y) {
+        //Get a board cell from an X and Y coordinate
+        return board[x][y]
+    }
+
     return {
-        board,
+        getBoard,
         printBoard,
+        getCellFromIndex,
+        getCellfromXY,
     }
 })();
 
@@ -35,7 +51,7 @@ const Renderer = (function() {
 
         //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
         for(let i = 0; i <=8; i++) {
-            display[i].children[0].textContent = convertToSymbol(gameBoard.board[Math.floor(i / 3)][i % 3]);
+            display[i].children[0].textContent = convertToSymbol(Board.getCellFromIndex(i));
         }
     }
 
@@ -68,11 +84,10 @@ const Game = function (playerOne, playerTwo) {
 
     //Player should be an object with a property of 'modifier' where 1 = X and -1 = 0
     //Coords should be an object, {x coord, y coord}
-    function haveTurn(Coords) {
-        //Check if its the player's turn
+    function haveTurn(cell) {
         //Check that the location is free to be played, if so, then change cell to player's modifier
-        if(gameBoard.board[Coords.x][Coords.y] === 0) {
-            gameBoard.board[Coords.x][Coords.y] = playersTurn.modifier;
+        if(cell === 0) {
+            cell = playersTurn.modifier;
         } else {
             //Add functionality to throw error or something
             return 'That space is already filled, try somewhere else.'
@@ -112,27 +127,27 @@ const Game = function (playerOne, playerTwo) {
             }
         }
         //Rows are already an array so just check them
-        gameBoard.board.forEach(checkArray);
+        Board.getBoard().forEach(checkArray);
         
         //Columns can be checked by looping through each row and only checking the relevant column value
         for(let i = 0; i < 2; i++) {
             checkArray([
-                gameBoard.board[0][i], 
-                gameBoard.board[1][i], 
-                gameBoard.board[2][i],
+                Board.getBoard()[0][i], 
+                Board.getBoard()[1][i], 
+                Board.getBoard()[2][i],
             ]);
         }
 
         //Diagonals must be checked separately as there are two variations, top left to bottom right and the mirror
         checkArray([
-            gameBoard.board[0][0],
-            gameBoard.board[1][1],
-            gameBoard.board[2][2],
+            Board.getBoard()[0][0],
+            Board.getBoard()[1][1],
+            Board.getBoard()[2][2],
         ]);
         checkArray([
-            gameBoard.board[0][2],
-            gameBoard.board[1][1],
-            gameBoard.board[2][0],
+            Board.getBoard()[0][2],
+            Board.getBoard()[1][1],
+            Board.getBoard()[2][0],
         ]);
     }
 
@@ -144,7 +159,7 @@ const Game = function (playerOne, playerTwo) {
 
         //If there is no winner and board is full (i.e. there are no 0s), it's a draw
         let checkDraw = true;
-        gameBoard.board.forEach((row) => {
+        Board.getBoard().forEach((row) => {
             if(row.includes(0)) {
                 checkDraw = false;
             }
@@ -188,13 +203,6 @@ function createPlayer(name, symbol) {
     }
 }
 
-//Factory Function that creates basic Coords object
-function createCoords(x, y) {
-    return {
-        x,
-        y,
-    }
-}
 
 //Game controller is used to control the flow of the game when the user interacts with the DOM
 function startGame(playerOneName, playerTwoName) {
@@ -299,20 +307,34 @@ const optionsSelector = (function () {
 
 //Event listeners for interacting with the board
 const boardInitialiser = (function() {
-    const boardCells = document.querySelectorAll('.board-cell');
 
-    //For all board cells, add a mouse enter and mouse leave event listener to indicate to show the user where they are going to place
+    const drawSymbol = function(event) {
+        event.target.textContent = gameController.myGame.getTurn().symbol;
+    }
+
+    const removeSymbol = function(event) {
+        event.target.textContent = '';
+    }
+
+    const boardCells = document.querySelectorAll('.board-cell');
     boardCells.forEach((element) => {
+        //Add a mouse enter and mouse leave event listener to indicate to show the user where they are going to place
         //Only works on blank cells
-        if(element.textContent === '') {
-            //Show the symbol as the mouse enters
-            element.addEventListener('mouseenter', (event) => {
-            event.target.textContent = gameController.myGame.getTurn().symbol;
-            });
-            //Remove the symbol as it leaves
-            element.addEventListener('mouseleave', (event) => {
-                event.target.textContent = '';
-            });
-        }
+        //Show the symbol as the mouse enters
+        element.addEventListener('mouseenter', drawSymbol);
+        //Remove the symbol as it leaves
+        element.addEventListener('mouseleave', removeSymbol);
+    
+        //Add a click event listener that changes the board cell's value
+        element.addEventListener('click', (event) => {
+            //Remove mouse hover drawing effects - effectively fixes the symbol
+            element.removeEventListener('mouseenter', drawSymbol);
+            element.removeEventListener('mouseleave', removeSymbol);
+            //Have a turn
+            coords = createCoords()
+            gameController.myGame.haveTurn()
+        });
+
     });
+
 })();
