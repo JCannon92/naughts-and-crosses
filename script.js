@@ -41,6 +41,12 @@ const Board = (function() {
 //IIFE that will create a renderer to convert the JS board to the DOM board
 const Renderer = (function() {
     const messageDisplay = document.querySelector('h2#message-display')
+    const display = document.querySelectorAll('.board-cell');
+
+    function getDisplay() {
+        return display;
+    }
+
     //Convert the array numbers to their symbols
     function convertToSymbol(num) {
         if(num === 1) {
@@ -53,9 +59,6 @@ const Renderer = (function() {
     }
 
     function renderBoard() {
-        //Get the display-board divs and convert the collection to an array
-        const display = document.querySelectorAll('.board-cell');
-
         //Loop through the collection and replace the text content of each div with its equivalent symbol from the board 
         for(let i = 0; i <=8; i++) {
             display[i].textContent = convertToSymbol(Board.getCellFromIndex(i));
@@ -74,6 +77,7 @@ const Renderer = (function() {
     }
 
     return {
+        getDisplay,
         renderBoard,
         renderTurnIndicator,
         renderMessage,
@@ -188,8 +192,12 @@ const createGame = function (playerOne, playerTwo) {
         } else {
             Renderer.renderMessage("It's a draw!");
         }
-        //Remove event listeners to prevent further interaction
-
+        //Remove event listeners to prevent further interaction by replacing each div with a clone of itself
+        for(let cell of Renderer.getDisplay()) {
+            cell.classList.add('game-end');
+            cell.replaceWith(cell.cloneNode(true));
+        }
+       
 
     }
 
@@ -350,5 +358,7 @@ const boardInitialiser = (function() {
         //Add a click event listener that changes the board cell's value
         element.addEventListener('click', () => selectCell(element, index));
     });
+
+    return {selectCell}
 
 })();
