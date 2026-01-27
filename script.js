@@ -69,14 +69,14 @@ const Renderer = (function() {
         if(!(player === 'Computer')) {messageDisplay.textContent = player.name + "'s turn!";}
     }
 
-    function renderErrorMessage(message) {
+    function renderMessage(message) {
         messageDisplay.textContent = message;
     }
 
     return {
         renderBoard,
         renderTurnIndicator,
-        renderErrorMessage,
+        renderMessage,
     }
 })();
 
@@ -102,7 +102,7 @@ const createGame = function (playerOne, playerTwo) {
             Board.changeCellFromIndex(cellIndex, playersTurn.modifier);
         } else {
             //Add functionality to throw error or something
-            Renderer.renderErrorMessage('That space is already taken, try somewhere else!')
+            Renderer.renderMessage('That space is already taken, try somewhere else!')
         }
 
         //Render board after a turn
