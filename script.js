@@ -34,6 +34,7 @@ const Board = (function() {
 
 //IIFE that will create a renderer to convert the JS board to the DOM board
 const Renderer = (function() {
+    const messageDisplay = document.querySelector('h2#message-display')
     //Convert the array numbers to their symbols
     function convertToSymbol(num) {
         if(num === 1) {
@@ -57,15 +58,19 @@ const Renderer = (function() {
 
     function renderTurnIndicator(player) {
         //Replace the turn indicator with the player to go next
-        const turnIndicator = document.querySelector('h2#turn-indicator');
         //Replace human with 'Your' in single player matches
-        if(player === 'Human') {turnIndicator.textContent = 'Your turn!'}
-        if(!(player === 'Computer')) {turnIndicator.textContent = player + "'s turn!";}
+        if(player === 'Human') {messageDisplay.textContent = 'Your turn!'}
+        if(!(player === 'Computer')) {messageDisplay.textContent = player + "'s turn!";}
+    }
+
+    function renderErrorMessage(message) {
+        messageDisplay.textContent = message;
     }
 
     return {
         renderBoard,
         renderTurnIndicator,
+        renderErrorMessage,
     }
 })();
 
@@ -90,7 +95,7 @@ const Game = function (playerOne, playerTwo) {
             cell = playersTurn.modifier;
         } else {
             //Add functionality to throw error or something
-            return 'That space is already filled, try somewhere else.'
+            Renderer.renderErrorMessage('That space is already taken, try somewhere else!')
         }
 
         //Render board after a turn
@@ -205,7 +210,7 @@ function createPlayer(name, symbol) {
 
 
 //Game controller is used to control the flow of the game when the user interacts with the DOM
-function startGame(playerOneName, playerTwoName) {
+function createGameController(playerOneName, playerTwoName) {
     //Remove splash screen and start the game!
     const playerOne = createPlayer(playerOneName, 'X');
     const playerTwo = createPlayer(playerTwoName, 'O');
@@ -272,7 +277,7 @@ const optionsSelector = (function () {
                 if(!invalidFlag) {
                     splashScreen.remove();
                     //Return a gameController object that is used to control the flow of the game
-                    gameController = startGame(playerOneInput.value, playerTwoInput.value);
+                    gameController = createGameController(playerOneInput.value, playerTwoInput.value);
                 }
             });
 
@@ -300,7 +305,7 @@ const optionsSelector = (function () {
     //Add events to the single and multiplayer buttons
     singlePlayerButton.addEventListener('click', () => {
         splashScreen.remove();
-        gameController = startGame('Human', 'Computer');
+        gameController = createGameController('Human', 'Computer');
     });
     multiPlayerButton.addEventListener('click', startMultiplayer);
 })();
@@ -331,8 +336,6 @@ const boardInitialiser = (function() {
             element.removeEventListener('mouseenter', drawSymbol);
             element.removeEventListener('mouseleave', removeSymbol);
             //Have a turn
-            coords = createCoords()
-            gameController.myGame.haveTurn()
         });
 
     });
