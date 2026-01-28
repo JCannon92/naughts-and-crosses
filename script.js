@@ -145,8 +145,9 @@ const Renderer = (function() {
                 Board.resetBoard();
                 renderBoard();
                 Board.initialise();
-                //Remove the replay button and render the splash screen
+                //Remove the replay button, reset the display message and render the splash screen
                 replayButton.remove();
+                renderMessage('');
                 renderSplashScreen();
             })
 
